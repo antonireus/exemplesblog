@@ -46,7 +46,7 @@ public class JAXBContextBenchmark {
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public String createJAXBContextAndMarshall(BenchmarkState state) throws Exception {
         JAXBContext jaxbContext = JAXBContext.newInstance(Persona.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -57,7 +57,7 @@ public class JAXBContextBenchmark {
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public String reuseJAXBContextAndMarshall(BenchmarkState state) throws Exception {
         Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
         StringWriter writer = new StringWriter();
