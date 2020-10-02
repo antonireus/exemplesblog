@@ -1,4 +1,4 @@
-package sample;
+package sample.adapter;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDate;

@@ -1,17 +1,29 @@
-package sample;
+package sample.model;
+
+import sample.adapter.LocalDateAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDate;
 
-@XmlRootElement(name = "PERSONA")
+@XmlRootElement
 public class Persona {
 
+    private String id;
     private String nom;
     private String primerCognom;
     private String segonCognom;
     private LocalDate dataNaixement;
     private String document;
+    private Adreça adreça;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getNom() {
         return nom;
@@ -52,5 +64,13 @@ public class Persona {
 
     public void setDocument(String document) {
         this.document = document;
+    }
+
+    public Adreça getAdreça() {
+        return adreça;
+    }
+
+    public void setAdreça(Adreça adreça) {
+        this.adreça = adreça;
     }
 }
