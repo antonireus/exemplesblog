@@ -9,7 +9,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.concurrent.TimeUnit;
 
 @State(Scope.Benchmark)
 public class JAXBContextBenchmark {
@@ -43,8 +42,6 @@ public class JAXBContextBenchmark {
 
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public String createJAXBContextAndMarshall() throws JAXBException {
         JAXBContext jaxbContext = JAXBContext.newInstance(Persona.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
@@ -54,8 +51,6 @@ public class JAXBContextBenchmark {
     }
 
     @Benchmark
-    @BenchmarkMode(Mode.AverageTime)
-    @OutputTimeUnit(TimeUnit.MICROSECONDS)
     public String reuseJAXBContextAndMarshall() throws JAXBException {
         Marshaller marshaller = JAXB_CONTEXT.createMarshaller();
         StringWriter writer = new StringWriter();
