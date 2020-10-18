@@ -37,13 +37,18 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -53,25 +58,32 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Thread)
 public class SimpleDateFormatBenchmark {
 
+    @Param({"1", "5", "10"})
+    public int datesLength;
+
     private SimpleDateFormat simpleDateFormat;
 
-    private Date date;
+    private List<Date> dates;
 
     @Setup(Level.Trial)
     public void setup() {
         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm.sss");
-        date = new Date();
+        dates = new ArrayList<>(datesLength);
+        Random random = new Random(1L);
+        for (int i = 0; i < datesLength; i++) {
+            dates.add(new Date(random.nextLong()));
+        }
     }
 
     @Benchmark
-    public String testCreateSDFAndFormat() {
+    public void testCreateSDFAndFormat(Blackhole bh) {
         SimpleDateFormat localSimpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm.sss");
-        return simpleDateFormat.format(date);
+        dates.forEach(d -> bh.consume(localSimpleDateFormat.format(d)));
     }
 
     @Benchmark
-    public String testReuseSDFAndFormat() {
-        return simpleDateFormat.format(date);
+    public void testReuseSDFAndFormat(Blackhole bh) {
+        dates.forEach(d -> bh.consume(simpleDateFormat.format(d)));
     }
 
 }
