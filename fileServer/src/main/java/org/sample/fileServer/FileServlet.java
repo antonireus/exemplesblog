@@ -12,14 +12,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.Part;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -74,15 +67,10 @@ public class FileServlet extends HttpServlet {
         } else {
             log.info("Download: " + filename);
             File downloadFile = new File(uploadDir, filename);
-            
-            
-            String safefilename = charsetSafe(filename, StandardCharsets.ISO_8859_1, "?");
-            String utf8filename = rfc5987_encode(filename);
-            
-            /*
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-            */
-                      
+
+            String safefilename = EncoderUtils.charsetSafeEncode(filename, StandardCharsets.ISO_8859_1, "_");
+            String utf8filename = EncoderUtils.headerEncode(filename, StandardCharsets.UTF_8);
+
             response.setHeader("Content-Disposition", "attachment"
                     + "; filename=\"" + safefilename + "\""
                     + "; filename*=UTF-8''" + utf8filename);
@@ -117,49 +105,4 @@ public class FileServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/file");
     }
     
-    public static String rfc5987_encode(final String s) {
-        final byte[] s_bytes = s.getBytes(StandardCharsets.UTF_8);
-        final int len = s_bytes.length;
-        final StringBuilder sb = new StringBuilder(len << 1);
-        
-        // digits hexadecimals
-        final char[] digits = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
-        
-        // caràcters permesos segons RFC5987: attr-char, ordenats per optimitzar la cerca
-        final byte[] attr_char = {'!','#','$','&','+','-','.','0','1','2','3','4','5','6','7','8','9', 
-                'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','^','_','`',
-                'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','|', '~'};
-        
-        for (int i = 0; i < len; ++i) {
-            byte b = s_bytes[i];
-            if (Arrays.binarySearch(attr_char, b) >= 0) {
-                // si el byte està dins els caràcters pemesos l'afegim
-                sb.append((char) b);
-            } else {
-                // sinó el codificam amb "%", veure https://tools.ietf.org/html/rfc3986#section-2.1
-                sb.append('%');
-                sb.append(digits[0x0f & (b >>> 4)]); // els 4 bits de l'esquerra
-                sb.append(digits[b & 0x0f]); // els 4 bits de la dreta
-            }
-        }
-
-        return sb.toString();
-    }
-    
-    public static String charsetSafe(String string, Charset charset, String replacement) {
-        CharsetEncoder encoder = charset.newEncoder();
-        if (encoder.canEncode(string)) {
-            return string;
-        }
-        
-        encoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
-        encoder.replaceWith(replacement.getBytes(charset));
-        try {
-            ByteBuffer buffer = encoder.encode(CharBuffer.wrap(string));
-            return new String(buffer.array(), charset);
-        } catch (CharacterCodingException e) {
-            // Realment no es pot produir mai perquè hem fixat CodingErrorAction.REPLACE
-            throw new IllegalStateException("encoder.onUnmappableCharacter hauria de ser REPLACE!!", e);
-        }
-    }
 }

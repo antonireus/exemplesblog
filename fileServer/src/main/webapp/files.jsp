@@ -28,7 +28,7 @@
                         <c:param name="download" value="${file.name}" />
                     </c:url>
                     <a href="${downloadLink}"><c:out value="${file.name}" /></a><br />
-                    <c:out value="${file.absolutePath}" /><br />
+                    <!-- <c:out value="${file.absolutePath}" /><br /> -->
                     <c:out value="${file.length()}" /><br />
                 </li>
             </c:forEach>
