@@ -46,8 +46,13 @@ import org.sample.filehash.FileChannelHashProducerImpl;
 import org.sample.filehash.FileHashProducer;
 import org.sample.filehash.FileInputStreamHashProducerImpl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -58,6 +63,28 @@ import java.util.concurrent.TimeUnit;
 public class MyBenchmark {
 
     private static final String ALGORITHM = "SHA-256";
+
+    private static final String TESTFILE = "TESTFILE";
+
+    static {
+        File file = new File(TESTFILE);
+        if (!file.exists()) {
+            System.out.printf("Creant %s%n", TESTFILE);
+
+            Random random = new Random(1L);
+            byte[] buffer = new byte[1_048_576];
+            try (OutputStream os = new FileOutputStream(file)){
+                for (int i = 0; i < 100; i++) {
+                    random.nextBytes(buffer);
+                    os.write(buffer);
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+        }
+    }
+
     // 8K, 64K, 512K
     @Param({"8192", "65536", "524288"})
     public int bufferSize;
@@ -79,17 +106,17 @@ public class MyBenchmark {
 
     @Benchmark
     public String testClassicIO() {
-        return classicIOProducer.calculateHash("GRAN.pdf");
+        return classicIOProducer.calculateHash(TESTFILE);
     }
 
     @Benchmark
     public String testNewIO() {
-        return newIOProducer.calculateHash("GRAN.pdf");
+        return newIOProducer.calculateHash(TESTFILE);
     }
 
     @Benchmark
     public String testNewIODirect() {
-        return newIODirectProducer.calculateHash("GRAN.pdf");
+        return newIODirectProducer.calculateHash(TESTFILE);
     }
 
 }

@@ -9,13 +9,13 @@ public class Main {
     public static void main(String... args) {
 
         String algorithm = "SHA-256";
-        String filename = "GRAN.pdf";
+        String filename = args[0];
         int bufferSize = 8192;
 
         List<FileHashProducer> producers = new ArrayList<>();
         producers.add(new FileInputStreamHashProducerImpl(algorithm, bufferSize));
         producers.add(new BufferedFileInputStreamHashProducerImpl(algorithm, bufferSize));
-        producers.add(new FileChannelHashProducerImpl(algorithm, bufferSize * 8, false));
+        producers.add(new FileChannelHashProducerImpl(algorithm, bufferSize * 8));
         producers.add(new FileChannelHashProducerImpl(algorithm, bufferSize * 8, true));
         producers.add(new FileInputStreamHashProducerImpl(algorithm, bufferSize));
 
