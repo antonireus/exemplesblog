@@ -50,8 +50,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -94,8 +92,6 @@ public class MyBenchmark {
     private FileHashProducer newIOProducer;
 
     private FileHashProducer newIODirectProducer;
-
-    private List<Date> dates;
 
     @Setup(Level.Trial)
     public void setup() {
